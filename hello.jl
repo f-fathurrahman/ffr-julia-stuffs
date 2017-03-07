@@ -1,1 +1,8 @@
-@printf("Hello from ffr\n")
+println("hello world")
+
+α = 
+ℒ = 
+
+ℐ = 
+𝓙†
+
