@@ -1,0 +1,42 @@
+\documentclass[a4paper]{article}
+
+\usepackage{url}
+
+\begin{document}
+
+
+Reference: \url{https://albi3ro.github.io/M4/prerequisites/Atomic-Orbitals.html}
+
+The Hamiltonian for our problem is:
+
+\begin{equation} {\cal H}\Psi(\mathbf{x}) =\left[ -\frac{\hbar}{2 m} \nabla^2 - \frac{Z e^2}{4 \pi \epsilon_0 r}\right]\Psi(\mathbf{x}) = E \Psi(\mathbf{x})
+\end{equation}
+with
+\begin{equation} \nabla^2= \frac{1}{r^2}\frac{\partial}{\partial r} \left( r^2 \frac{\partial}{\partial r} \right)+ \frac{1}{r^2 \sin \theta} \frac{\partial}{\partial \theta} \left( \sin \theta \frac{\partial}{\partial \theta} \right)+ \frac{1}{r^2 \sin^2 \theta} \frac{\partial^2}{\partial \phi^2}
+\end{equation}
+
+To solve this problem, we begin by guessing a solution with separated radial and angular variables, \begin{equation} \Psi(\mathbf{x}) = R(r) \Theta ( \theta,\phi) \end{equation}
+
+\begin{equation} \frac{E r^2 R(r)}{2r R^{\prime}(r) + r^2 R^{\prime \prime}(r)}= \frac{\left( \frac{1}{\sin \theta} \frac{\partial}{\partial \theta} \left( \sin \theta \frac{\partial \Theta(\theta,\phi)}{\partial \theta} \right)+ \frac{1}{\sin^2 \theta} \frac{\partial^2 \Theta(\theta,\phi)}{\partial \phi^2}\right) }{\Theta( \theta, \phi)} =C \end{equation}
+
+Instead of going into the precise mechanisms of solving those two separate equations here, trust for now that they follow standard special functions, the associated Legendre polynomial and the generalized Laguerre polynomial. Try a standard quantum mechanics textbook for more information about this.
+
+\begin{equation}
+Y^m_l(\theta,\phi) = (-1)^m e^{i m \phi} P^m_l (\cos(	\theta))
+\end{equation}
+where $P^m_l (\cos (\theta))$ is the associated Legendre polynomial.
+
+\begin{equation}
+R^{n,l} ( \rho ) = \rho ^l e^{- \rho /2} L^{2 l+1}_{n-l-1} ( \rho )
+\end{equation}
+where $L^{2 l+1}_{n-l-1}(\rho)$ is the generalized Laguerre polynomial.
+
+\begin{equation}
+\rho=\frac{2r}{n a_0}
+\end{equation}
+
+\begin{equation}
+N=\sqrt{\left(\frac{2}{n}\right)^3 \frac{(n-l-1)}{2n(n+l)!}}
+\end{equation}
+
+\end{document}
