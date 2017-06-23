@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sistem Tipe &mdash; dokumentasi Pengenalan Bahasa Pemrograman Julia 0.0.1</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="dokumentasi Pengenalan Bahasa Pemrograman Julia 0.0.1" href="index.html" />
+    <link rel="prev" title="Welcome to Pengenalan Bahasa Pemrograman Julia’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sistem-tipe">
+<h1>Sistem Tipe<a class="headerlink" href="#sistem-tipe" title="Link permanen untuk headline ini">¶</a></h1>
+<p>Sistem tipe pada Julia bersifat dinamik, namun juga dapat mengambil keuntungan dari
+sistem tipe statik karena juga memungkinkan kita untuk mengindikasikan tipe dari
+suatu variabel atau data.</p>
+<p>Secara default, tipe data pada Julia dapat dihilangkan sehingga suatu variabel
+dapat memiliki tipe apa saja.</p>
+<div class="section" id="deklarasi-tipe">
+<h2>Deklarasi tipe<a class="headerlink" href="#deklarasi-tipe" title="Link permanen untuk headline ini">¶</a></h2>
+<p>Deklarasi tipe pada Julia dapat dilakukan dengan menggunakan operator <cite>::</cite>.
+Misalkan:</p>
+<div class="code julia highlight-python"><div class="highlight"><pre><span></span>N::Int64 = 10
+a::Float64 = 34.1
+</pre></div>
+</div>
+<p>Ketika operator <cite>::</cite> diberikan setelah suatu ekspresi, maka operator <cite>::</cite>
+dibaca sebagai <em>is an instace of</em> yang digunakan sebagai penegasan suatu
+ekspresi akan memiliki suatu tipe tertentu.</p>
+<p>Deklarasi juga dapat disematkan pada definisi fungsi:</p>
+<div class="code julia highlight-python"><div class="highlight"><pre><span></span>function sinc(x)::Float64
+  if x == 0
+    return 1
+  end
+  return sin(pi*x)/(pi*x)
+end
+</pre></div>
+</div>
+</div>
+<div class="section" id="tipe-abstrak">
+<h2>Tipe abstrak<a class="headerlink" href="#tipe-abstrak" title="Link permanen untuk headline ini">¶</a></h2>
+<p>Tipe abstrak tidak dapat diinstansiasi dan hanya berfungsi sebagai node pada
+graf tipe, sehingga mendeskripsikan himpunan dari tipe-tipe konkrit yang saling
+berkaitan: tipe konkrit yang merupakan turunan dari tipe abstrak ini.
+Meskipun tidak memiliki instansiasi, tipe abstrak diperlukan karena tipe abstrak
+merupakan tulang punggung dari sistem tipe, sebagai hierarki konseptual yang
+membuat tipe sistem pada Julia lebih dari sekedar kumpulan dari implementasi obyek.</p>
+<p>Sintaks:</p>
+<div class="code julia highlight-python"><div class="highlight"><pre><span></span>abstract type NamaTipe end
+abstract type NamaTipe &lt;: TipeSuper end
+</pre></div>
+</div>
+</div>
+<div class="section" id="misc">
+<h2>Misc<a class="headerlink" href="#misc" title="Link permanen untuk headline ini">¶</a></h2>
+<p>Untuk mengkonversi dari suatu tipe ke tipe yang lain dapat digunakan
+fungsi <code class="docutils literal"><span class="pre">convert()</span></code>.</p>
+<p>Fungsi <code class="docutils literal"><span class="pre">typeof()</span></code> dapat digunakan untuk mengetahui tipe suatu variabel:</p>
+<div class="code julia highlight-python"><div class="highlight"><pre><span></span>julia&gt; typeof(3.14)
+Float64
+
+julia&gt; typeof(11)
+Int64
+
+julia&gt; typeof(2//5)
+Rational{Int64}
+
+julia&gt; typeof( (1,4,2) )
+Tuple{Int64,Int64,Int64}
+</pre></div>
+</div>
+<p>Fungsi <code class="docutils literal"><span class="pre">subtypes()</span></code> dapat digunakan untuk mengetahui subtipe dari suatu tipe
+dan <code class="docutils literal"><span class="pre">supertype()</span></code> digunakan untuk mengetahui supertipe dari suati tipe.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Daftar Isi</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Sistem Tipe</a><ul>
+<li><a class="reference internal" href="#deklarasi-tipe">Deklarasi tipe</a></li>
+<li><a class="reference internal" href="#tipe-abstrak">Tipe abstrak</a></li>
+<li><a class="reference internal" href="#misc">Misc</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="bab sebelum">Welcome to Pengenalan Bahasa Pemrograman Julia&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>Halaman Ini</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Tipe.txt"
+            rel="nofollow">Lihat Sumber</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Pencarian cepat</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Masukkan term pencarian atau nama modul, class atau fungsi.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Fadjar Fathurrahman.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/Tipe.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
