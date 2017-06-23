@@ -55,6 +55,31 @@ Sintaks:
   abstract type NamaTipe <: TipeSuper end
 
 
+Tipe primitif
+-------------
+
+Tipe primitif adalah tipe konkrit yang memiliki data plain old bits.
+
+
+Tipe komposit
+-------------
+
+Biasa disebut dengan record, struct, atau object pada bahasa pemrograman yang
+lain.
+
+.. code:: julia
+
+  struct MyCompositeType
+    Ndata::Int64
+    v::Array{Int64,2}
+  end
+
+
+Fungsi ``fieldnames()`` dapat digunakan untuk mengetahui field apa saja
+yang ada pada suatu instans dari tipe komposit.
+
+Objek komposit yang dideklarasikan dengan struct bersifat *immutable*: artinya
+objek tersebut tidak dapat dimodifikasi setelah konstruksi.
 
 
 Misc
