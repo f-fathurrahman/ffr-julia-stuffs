@@ -16,10 +16,18 @@ Deklarasi tipe
 Deklarasi tipe pada Julia dapat dilakukan dengan menggunakan operator ``::``.
 Misalkan:
 
-.. code:: julia
+.. code:: Julia
 
   N::Int64 = 10
   a::Float64 = 34.1
+
+
+Python code
+
+.. code:: Python
+
+  def myfunc():
+      pass
 
 Ketika operator ``::`` diberikan setelah suatu ekspresi, maka operator ``::``
 dibaca sebagai *is an instance of* yang digunakan sebagai penegasan suatu
@@ -27,7 +35,7 @@ ekspresi akan memiliki suatu tipe tertentu.
 
 Deklarasi juga dapat disematkan pada definisi fungsi:
 
-.. code:: julia
+.. code:: jl
 
   function sinc(x)::Float64
     if x == 0
@@ -49,7 +57,7 @@ membuat tipe sistem pada Julia lebih dari sekedar kumpulan dari implementasi oby
 
 Sintaks:
 
-.. code:: julia
+.. code:: jl
 
   abstract type NamaTipe end
   abstract type NamaTipe <: TipeSuper end
@@ -91,7 +99,7 @@ fungsi ``convert()``.
 Fungsi ``typeof()`` dapat digunakan untuk mengetahui tipe suatu variabel:
 
 
-.. code:: julia
+.. code:: jlcon
 
   julia> typeof(3.14)
   Float64
