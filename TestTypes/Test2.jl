@@ -2,7 +2,7 @@ type Atom
   name::AbstractString
 end
 
-type Wavefun
+mutable struct Wavefun
   dat::Array{Complex128}
 end
 
