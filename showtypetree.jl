@@ -1,3 +1,4 @@
+# Using global variable !!!
 level = 0
 
 function showtypetree(subtype)
@@ -14,4 +15,3 @@ function showtypetree(subtype)
 end
 
 showtypetree(Number)
-
