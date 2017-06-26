@@ -1,12 +1,12 @@
 # Library
-abstract bar
+abstract type bar end
 
 ex(x) = println("dynamic")
 ex(x::bar) = println("bar")
 
 test(x::bar) = ex(x)
 
-type foo <: bar
+struct foo <: bar
   x :: Int
 end
 
