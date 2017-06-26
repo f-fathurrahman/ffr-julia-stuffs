@@ -1,0 +1,50 @@
+\documentclass[a4paper,12pt,fleqn,bahasa]{extbook}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=2cm,bmargin=2cm,lmargin=2cm,rmargin=2cm}
+
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+
+%\setmainfont{Ubuntu}
+%\setmonofont{Ubuntu Mono}
+
+\setmainfont{Linux Libertine O}
+\setmonofont{FreeMono}
+
+%\setlength{\parindent}{0cm}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{minted}
+
+\newminted{julia}{breaklines,fontsize=\footnotesize}
+\newminted{jlcon}{breaklines,fontsize=\footnotesize}
+\newminted{fortran}{breaklines,fontsize=\small}
+
+\definecolor{mintedbg}{rgb}{0.95,0.95,0.95}
+\usepackage{mdframed}
+
+\usepackage{babel}
+
+%\BeforeBeginEnvironment{minted}{\begin{mdframed}[backgroundcolor=mintedbg]}
+%\AfterEndEnvironment{minted}{\end{mdframed}}
+
+\usepackage{setspace}
+
+\begin{document}
+
+\title{Pengenalan Bahasa Pemrograman Julia}
+\author{Fadjar Fathurrahman}
+\date{}
+\maketitle
+
+\tableofcontents
+
+\input{Tipe}
+
+\end{document}
