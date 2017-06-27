@@ -39,4 +39,6 @@ function my_second_function()
   println("Yeay")
 end
 
+include("Mod1.jl")
+
 end
