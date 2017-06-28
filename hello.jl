@@ -1,8 +1,7 @@
 println("hello world")
-
-α = 
-ℒ = 
-
-ℐ = 
-𝓙†
-
+println("hello α")
+@printf("ℒ\n")
+# ℐ: typed by \mscrI
+println("ℐ")
+# The following character is typed by \mbfscrJ
+println("𝓙†")

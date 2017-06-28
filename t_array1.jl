@@ -7,7 +7,7 @@
 #
 # Fibonacci
 #
-A = Array(Int64,15);
+A = Array{Int64}(15)
 A[1] = 0
 A[2] = 1
 [ A[i] = A[i-1] + A[i-2] for i = 3:length(A) ]
@@ -17,10 +17,8 @@ A[2] = 1
 
 # Display
 for i=1:length(A)
-  @printf "%d " A[i]
+  @printf("%d ",A[i])
 end
-@printf "\n"
-
+@printf("\n")
 
 A = [1 2 3; 4 5 6];
-
