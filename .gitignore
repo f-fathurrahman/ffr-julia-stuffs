@@ -2,6 +2,7 @@
 *.swo
 *~
 
+target
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
