@@ -4,10 +4,12 @@ makedocs(
     clean = false,
     format = :html,
     sitename = "Pengenalan Bahasa Pemrograman Julia",
-    authors = "Fadjar Fathurrahman",
+    authors = "Julia Development Team dan Fadjar Fathurrahman",
     pages = Any[
         "Home" => "index.md",
-        "Tipe" => "Tipe.md"
+        "TutorialSingkat" => "TutorialSingkat.md",
+        "Variabel" => "Variabel.md",
+        "Tipe" => "Tipe.md",
     ],
     html_prettyurls = true,
 )
