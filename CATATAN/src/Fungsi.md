@@ -528,3 +528,27 @@ yang sama lebih dari sekali. Sebagai contoh, dalam pemanggilan
 `plot(x, y; options..., width=2)` mungkin saya struktur `options` juga mengandung
 nilai untuk `width`. Dalam kasus tersebut, argumen paling kanan akan
 diprioritaskan, sehingga dalam hal ini `width` akan memiliki nilai `2`.
+
+
+
+## Evaluasi ruang lingkup dari nilai default
+
+Argumen default dan kata kunci memiliki sedikit perbedaan dalam hal bagaimana
+nilai default mereka dievaluasi.
+Ketika ekspresi argumen default dievaluasi, hanya argumen sebelunya yang berada
+dalam ruang lingkup. Sebaliknya, semua argumen berada dalam ruang lingkup ketika
+argumen kata kunci dievaluasi. Sebagai contoh, diberikan definisi berikut:
+
+```julia
+function f(x, a=b, b=1)
+    ###
+end
+```
+
+`b` dalam `a=b` berada dalam ruang lingkup luar, namun tidak pada argumen `b`
+setelahnya. Akan tetapi, jika `a` dan `b` adalah argumen kata kunci, maka
+keduanya akan dibuat dalam ruang lingkup yang sama dan `b` dalam `a=b` akan
+merujuk pada argumen `b` setelahnya (dan menutupi semua definisi `b` pada
+ruang lingkup lebih luar), dan akan menghasilkan *undefined variable error*
+karena ekspresi default dievaluasi dari kiri-ke-kanan, dan `b` belum diberikan
+nilai apapun.
