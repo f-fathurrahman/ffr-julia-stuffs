@@ -1,0 +1,4 @@
+# Komputasi Paralel
+
+xxx
+
