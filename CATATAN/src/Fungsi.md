@@ -421,3 +421,110 @@ Closest candidates are:
 Seperti yang bisa diamati dari contoh di atas, jika jumlah elemen yang dipecah
 tidak cocok, pemanggilan fungsi akan gagal karena fungsi diberikan jumlah argumen
 yang lebih banyak dari yang seharusnya.
+
+## Argumen opsional
+
+Pada banyak kasus, argumen fungsi harus memiliki nilai default yang masuk akal
+sehingga tidak perlu diberikan secara eksplisit pada setiap pemanggilan fungsi.
+Sebagai contoh, fungsi pustaka standard `parse(T, num, base)` menginterpretasi
+suatu string sebagai bilangan dalam basis tertentu. Argumen `base` memiliki
+nilai default `10`. Perilaku ini dapat diimplementasikan dengan menuliskan
+definisi fungsi sebagai:
+
+```julia-repl
+function parse( type, num, base=10)
+    ###
+end
+```
+
+Dengan definisi ini, fungsi dapat dipanggil dengan dua atau tiga argumen, dan
+`10` secara otomatis dilemparkan ketika argumen ketiga tidak diberikan.
+
+```julia-repl
+julia> parse(Int,"12",10)
+12
+
+julia> parse(Int,"12",3)
+5
+
+julia> parse(Int,"12")
+12
+```
+
+Argumen opsional sebenarnya hanyalah sintaks praktis untuk menuliskan definisi
+metode jamak dengan jumlah argumen yang berbeda.
+(Lihat juga **Catatan mengenai argumen opsional dan kata kunci**).
+
+## Argumen kata kunci
+
+Beberapa fungsi memerlukan jumlah argumen yang banyak, atau memiliki banyak
+perilaku yang berbeda. Mengingat bagaimana memanggil fungsi tersebut dapat menjadi
+sulit. Argumen kata kunci dapat digunakan untuk membuat antarmuka fungsi tersebut
+menjadi lebih mudah untuk digunakan dan dikembangkan dengan memungkinkan argument
+diidentifikasi dengan nama selain dari hanya posisinya.
+
+Sebagai contoh, tinjau sebuah fungsi `plot` yang menggambar sebuah garis. Fungsi
+ini dapat memiliki banyak opsi, seperti bagaimana gaya garis, ketebalan, warna,
+dan sebagainya. Apabila fungsi ini menerima argumen kata kunci, pemanggilan fungsi
+tersebut dapat seperti `plot(x, y, width=2)`, di mana kita hanya memilih untuk
+memberikan spesifikasi ketebalan garis. Perhatikan bahwa hal ini memiliki dua tujuan.
+Pemanggilan fungsi menjadi lebih mudah untuk dibaca karena kita melabeli sebuah
+argumen dengan artinya. Hal ini juga memungkinkan kita untuk melemparkan
+banyak argumen dengan posisi sembarang.
+
+Fungsi dengan argumen kata kunci didefinisikan dengan menggunakan tanda titik-koma
+`;` pada signature fungsi.
+
+```julia
+function plot(x, y; style="solid", width=1, color="black")
+    ###
+end
+```
+
+Ketika fungsi ini dipanggil, tanda titik-koma bersifat opsional: kita dapat
+memanggil fungsi dengan sintaks `plot(x, y, width=2)` atau `plot(x, y; width=2)`,
+namun sintaks pertama lebih umum digunakan. Tanda titik-koma eksplit
+hanya diperlukan ketika melemparkan `varargs` atau kata kunci yang dihitung
+seperti yang akan dijelaskan di bawah ini.
+
+Argumen kata kunci default dievaluasi hanya jika diperlukan (ketika kata kunci
+argumen yang terkait tidak dilemparkan ke fungsi), dan dalam urutan dari kiri
+ke kanan. Dengan demikinan, eskpresi default dapat merujuk pada argumen kata
+kunci sebelumnya.
+
+Tipe dari argumen kata kunci dapat diberikan secara eksplisit:
+
+```julia
+function f(; x::Int64=1)
+    ###
+end
+```
+
+Argumen kata kunci esktra dapat dikumpulkan dengan menggunakan elipsis `...`
+seperti pada kata kunci `varargs`.
+
+```julia
+function f(x; y=0, kwargs...)
+    ###
+end
+```
+
+Di dalam fungsi `f`, `kwargs` akan berupa koleksi dari tupel `(key,value)`,
+di mana setiap `key` adalah sebuah simbol. Koleksi tersebut dapat dilemparkan
+sebagai argumen kata kunci dengan menggunakan titik-koma pada pemanggilan fungsi,
+misalnya `f(x, z=1; kwargs...)`. Dictionary juga dapat digunakan untuk
+keperluan ini.
+
+Kita juga dapat melemparkan tupel `(key,value)` atau sembarang ekpresi iterabel
+(seperti pasangan `=>`) yang dapat di-*assign* pada tupel tersebut, secara
+eskplisit setelah titik-koma.
+Sebagai contoh, `plot(x, y; (:width,2))` dan `plot(x, y; :width => 2)` ekuivalen
+dengan `plot(x, y, width=2)`.
+Hal ini berguna pada situasi di mana argumen kata kunci ditentukan/dihitung
+pada *runtime*.
+
+Sifat dari argumen kata kunci memungkinkan kita untuk menspesifikasikan argumen
+yang sama lebih dari sekali. Sebagai contoh, dalam pemanggilan
+`plot(x, y; options..., width=2)` mungkin saya struktur `options` juga mengandung
+nilai untuk `width`. Dalam kasus tersebut, argumen paling kanan akan
+diprioritaskan, sehingga dalam hal ini `width` akan memiliki nilai `2`.
