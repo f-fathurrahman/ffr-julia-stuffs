@@ -178,6 +178,9 @@ infiks seperti halnya `+`.
 
 ## Operator dengan nama khusus
 
+Beberapa ekspresi khusus memiliki bentuk pemanggilan fungsi khusus dengan
+nama khusus. Ekspresi tersebut adalah sebagai berikut.
+
 | Ekspresi | Pemanggilan |
 | ---------| ----------- |
 | `[A B C ...]` | `hcat()` |
@@ -191,3 +194,230 @@ infiks seperti halnya `+`.
 
 Fungsi tersebut termasuk dalam modul `Base.Operators` meskipun mereka tidak
 memiliki nama operator.
+
+## Fungsi anonim
+
+Fungsi dalam Julia adalah objek kelas pertama (*first-class object*). Mereka
+dapat di-*assign* ke variabel dan dipanggil dengan sintaks pemanggilan fungsi
+standard dari variabel yang telah di-*assign*. Mereka dapat digunakan sebagai
+argumen dan dapat dikembalikan sebagai nilai. Mereka juga dapat dibuat secara
+anonim, tanpa diberikan nama, dengan menggunakan salah satu dari sintaks
+berikut.
+
+```julia-repl
+julia> x -> x^2 + 2x - 1
+(::#1) (generic function with 1 method)
+
+julia> function (x)
+           x^2 + 2x - 1
+       end
+(::#3) (generic function with 1 method)
+```
+
+Sintaks ini akan membuat sebuah fungsi yang mengambil satu argumen `x` dan
+mengembalikan nilai dari polinom `x^2 + 2x - 1` pada nilai `x` yang
+diberikan. Perhatikan bahwa hasil dari sintaks ini adalah fungsi generik,
+dengan nama yang diberikan oleh kompiler secara otomatis berdasarkan penomoran
+urut.
+
+Kegunaan utama fungsi anonim adalah untuk dilemparkan pada fungsi yag mengambil
+fungsi lain sebagai argumen. Contohnya adalah fungsi `map()` yang mengaplikasikan
+sebuah fungsi ke setiap nilai dari array dan mengembalikan array baru yang berisi
+hasil dari aplikasi ini.
+
+```julia-repl
+julia> map(round, [1.2,3.5,1.7])
+3-element Array{Float64,1}:
+ 1.0
+ 4.0
+ 2.0
+```
+
+Hal ini dapat bekerja apabila fungsi bernama yang melakukan transformasi
+sudah tersebut untuk dilemparkan sebagai argumen pertama pada `map()`.
+Seringkali, fungsi bernama ini belum ada. Pada situasi tersebut, fungsi
+anonim dapat dikonstruksi:
+
+```julia-repl
+julia> map(x -> x^2 + 2x - 1, [1,3,-1])
+3-element Array{Int64,1}:
+  2
+ 14
+ -2
+```
+
+Fungsi anonim yang menerima argumen lebih bari satu dapat ditulis dengan menggunakan
+sintaks `(x,y,z) -> 2x + y - z`, misalnya. Fungsi anonim yang tidak memiliki
+argument dapat ditulis sebagai `() -> 3`. Konsep fungsi tanpa argumen terlihat aneh,
+namun berguna untuk "menunda" perhitungan. Dalam penggunaan ini, sebuat blok
+kode dibungkus dalam suatu fungsi tanpa argumen yang nantinya dipanggil dengan
+`f()`.
+
+## Nilai kembalian jamak
+
+Dalam Julia, kita menggunakan tupel untuk mengembalikan nilai lebih dari satu.
+Tupel dapat dikonstruksi dan didekonstruksi tanpa memerlukan tanda kurung,
+sehingga memberikan kesan bahwa lebih dari satu nilai yang dikembalikan.
+Sebagai contoh:
+
+```julia-repl
+julia> function foo(a,b)
+           a+b, a*b
+       end
+foo (generic function with 1 method)
+```
+
+Jika fungsi ini dipanggil pada sesi interaktif tanpa melakukan *assignment*
+ke suatu variabel, kita akan mengamati bahwa tupel akan diberikan.
+
+```julia-repl
+julia> foo(2,3)
+(5, 6)
+```
+
+Penggunaan tipikal dari kasus ini adalah mengekstraksi setiap nilai ke variabel.
+Julia dapat melakukan 'destrukturisasi' tupel untuk memfasilitasi hal ini.
+
+```julia-repl
+julia> x, y = foo(2,3)
+(5, 6)
+
+julia> x
+5
+
+julia> y
+6
+```
+
+Kita juga dapat mengembalikan nilai melalui penggunaan eksplit kata kunci
+`return`:
+
+```julia
+function foo(a,b)
+    return a+b, a*b
+end
+```
+
+Pendefinisian ini memiliki efek yang sama dengan definisi sebelumnya dari fungsi
+`foo`.
+
+
+
+## Fungsi `varargs`
+
+Kadang kala kita perlu menulis fungsi yang dapat mengambil sembarang jumlah
+argumen. Fungsi ini dikenal sebagai fungsi `varargs`, yang merupakan singkatan
+argumeo. dari *variable number of arguments*. Kita dapat mendefinisikan
+fungsi *varargs* dengan cara menambahkan elipsis `...`
+pada argumen terakhir:
+
+```julia-repl
+julia> bar(a,b,x...) = (a,b,x)
+bar (generic function with 1 method)
+```
+
+Seperti fungsi biasa, variabel `a` dan `b` terikat pada dua nilai pertama
+argumen fungsi, dan variabel x terikat pada koleksi iterabel dari 0 atau lebih
+nilai yang diberikan ke fungsi `bar` setelah dua argumen pertama:
+
+```julia-repl
+julia> bar(1,2)
+(1, 2, ())
+
+julia> bar(1,2,3)
+(1, 2, (3,))
+
+julia> bar(1, 2, 3, 4)
+(1, 2, (3, 4))
+
+julia> bar(1,2,3,4,5,6)
+(1, 2, (3, 4, 5, 6))
+```
+
+Pada semua kasus di atas, `x` terikat pada tupel dari nilai selain `a`
+dan `b` yang dilempar ke fungsi `bar`.
+
+Kita dapat memberikan batasan terhadap jumlah nilai yang dilempar sebagai
+argumen variabel; hal ini akan didiskusikan lebih lanjut pada
+metode `varargs` terbatas-parameter.
+
+Terkadang berguna untuk memisahkan variabel yang berada pada koleksi iterabel
+menjadi pemanggilan fungsi sebagai argumen individual. Untuk melakukan hal ini,
+kita juga dapat menggunakan elipsis `...` namun di dalam pemanggilan fungsi.
+
+```julia-repl
+julia> x = (3, 4)
+(3, 4)
+
+julia> bar(1,2,x...)
+(1, 2, (3, 4))
+```
+
+Dalam kasus ini, tupel nilai akan dipecah menjadi `varargs`.
+
+```julia-repl
+julia> x = (2, 3, 4)
+(2, 3, 4)
+
+julia> bar(1,x...)
+(1, 2, (3, 4))
+
+julia> x = (1, 2, 3, 4)
+(1, 2, 3, 4)
+
+julia> bar(x...)
+(1, 2, (3, 4))
+```
+
+Objek iterabel yang dipecah dalam pemanggilan fungsi tidak harus berupa
+tupel:
+
+```julia-repl
+julia> x = [3,4]
+2-element Array{Int64,1}:
+ 3
+ 4
+
+julia> bar(1,2,x...)
+(1, 2, (3, 4))
+
+julia> x = [1,2,3,4]
+4-element Array{Int64,1}:
+ 1
+ 2
+ 3
+ 4
+
+julia> bar(x...)
+(1, 2, (3, 4))
+```
+
+Selain itu, fungsi yang argumennya dipecah tidak perlu berupa fungsi `varargs`
+(meskipun seringkali adalah fungsi `varargs`):
+
+```julia-repl
+julia> baz(a,b) = a + b;
+
+julia> args = [1,2]
+2-element Array{Int64,1}:
+ 1
+ 2
+
+julia> baz(args...)
+3
+
+julia> args = [1,2,3]
+3-element Array{Int64,1}:
+ 1
+ 2
+ 3
+
+julia> baz(args...)
+ERROR: MethodError: no method matching baz(::Int64, ::Int64, ::Int64)
+Closest candidates are:
+  baz(::Any, ::Any) at none:1
+```
+
+Seperti yang bisa diamati dari contoh di atas, jika jumlah elemen yang dipecah
+tidak cocok, pemanggilan fungsi akan gagal karena fungsi diberikan jumlah argumen
+yang lebih banyak dari yang seharusnya.
