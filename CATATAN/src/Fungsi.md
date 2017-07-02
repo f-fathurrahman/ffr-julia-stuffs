@@ -552,3 +552,86 @@ merujuk pada argumen `b` setelahnya (dan menutupi semua definisi `b` pada
 ruang lingkup lebih luar), dan akan menghasilkan *undefined variable error*
 karena ekspresi default dievaluasi dari kiri-ke-kanan, dan `b` belum diberikan
 nilai apapun.
+
+## Sintaks Blok-`do` untuk argumen fungsi
+
+Melemparkan fungsi sebagai argumen ke fungsi lain merupakan teknik yang sangat
+berguna, namun tidak selalu mudah untuk menggunakannya. Pemanggilan fungsi
+teknik ini terlihat janggal untuk ditulis ketika argument fungsi memerlukan
+lebih dari satu baris. Sebagai contoh, tinjau pemanggilan fungsi `map()`
+pada fungsi dengan beberapa kasus:
+
+```julia
+map(x->begin
+           if x < 0 && iseven(x)
+               return 0
+           elseif x == 0
+               return 1
+           else
+               return x
+           end
+       end,
+    [A, B, C])
+```
+
+Julia menyediakan kata kunci `do` untuk menulis kode ini dengan lebih
+jelas:
+
+```julia
+map([A, B, C]) do x
+    if x < 0 && iseven(x)
+        return 0
+    elseif x == 0
+        return 1
+    else
+        return x
+    end
+end
+```
+
+Sintaks `do x` akan menghasilkan fungsi anonim dengan argumen `x` dan melemparkan
+fungsi ini sebagai argumen pertama ke fungsi `map()`. Begitu juga `do a,b` akan
+menghasilkan fungsi anonim dengan dua argumen dan `do` saja akan mendeklarasikan
+bahwa pernyataan selanjutnya adalah fungsi anonim dengan bentuk `() -> ...`.
+
+Bagaimana argumen tersebut diinisialisasi bergantung pada fungsi 'lebih luar';
+dalam kasus ini adalah `map()` yang akan berturut-turut memberikan nilai `x`
+ke `A`, `B`,`C`, memanggil fungsi anonim pada tiap-tiap nilai tersebut, sebagaimana
+yang dilakukan dengan sintaks `map(func, [A,B,C])`
+
+Sintaks ini memudahkan penggunaan fungsi untuk mengekstensi bahasa, karena pemanggilan
+ini mirip seperti blok kode biasa. Terdapat banyak penggunaan yang cukup berbeda
+dengan contoh yang baru saja diberikan untuk fungsi `map()`, seperti dalam kasus
+pengaturan keadaan sistem. Sebagai contoh, terdapat satu versi dari fungsi
+`open()` yang menjalankan kode yang menjamin bahwa file yang dibuka akan ditutup
+pada akhirnya:
+
+```julia
+open("outfile", "w") do io
+    write(io, data)
+end
+```
+
+Hal ini dicapai dengan menggunakan definisi berikut untuk fungsi `open()`:
+
+```julia
+function open(f::Function, args...)
+    io = open(args...)
+    try
+        f(io)
+    finally
+        close(io)
+    end
+end
+```
+
+Di sini, pertama-tama `open()` akan membuka file untuk ditulis dan kemudian
+melemparkan output stream yang dihasilkan ke fungsi anonim yang didefinisikan
+dalam blok `do ... end`. Setelah pemanggilan fungsi anonim ini keluar, `open()`
+akan menjamin bahwa stream yang dibuka akan ditutup sebagaimana mestinya,
+tidak bergantung pada apakah fungsi anonim yang kita tulis keluar dengan normal
+atau melemparkan eksepsi.
+(Konstruksi `try ...  finally` akan dijelaskan pada **Alur Kontrol**).
+
+Sintaks blok `do` membantu untuk mengecek dokumentasi atau implementasi untuk
+mengetahui bagaimana fungsi pengguna diinisialisasi.
