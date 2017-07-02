@@ -635,3 +635,116 @@ atau melemparkan eksepsi.
 
 Sintaks blok `do` membantu untuk mengecek dokumentasi atau implementasi untuk
 mengetahui bagaimana fungsi pengguna diinisialisasi.
+
+## Sintaks dot untuk fungsi vektorisasi
+
+Dalam bahasa teknis-komputasi, sering ditemukan versi fungsi yang tervektorisasi,
+yang mengaplikasikan suatu fungsi `f(x)` ke setiap elemen dari array `A` untuk
+menhasilkan array baru dengan sintaks `f(A)`. Sintaks semacam ini sangat mudah
+digunakan untuk pemrosesan data, akan tetapi pada bahasa lain vektorisasi juga
+seringkali diperlukan untuk memperoleh performa yang baik: jika loop berjalan
+lambat, versi tervektorisasi dari suatu fungsi dalah digunakan untuk memanggil
+kode dari pustaka yang ditulis dalam bahasa level rendah. Pada Julia, fungsi
+tervektorisasi tidak wajib digunakan untuk memperoleh performa yang baik dan
+seringkali kita perlu menulis loop secara eksplisit. Meskipun demikian fungsi
+tervektorisasi dapat memudahkan kita menulis kode. Oleh karena itu, semua fungsi
+Julia `f` dapat diaplikasikan elemen-per-element ke sembarang array (atau koleksi
+yang lain) dengan sintaks `f.(A)`. Sebagai contoh, fungsi `sin` dapat diaplikasikan
+ke semua elemen dari vektor `A` sebagai berikut:
+
+```julia-repl
+julia> A = [1.0, 2.0, 3.0]
+3-element Array{Float64,1}:
+ 1.0
+ 2.0
+ 3.0
+
+julia> sin.(A)
+3-element Array{Float64,1}:
+ 0.841471
+ 0.909297
+ 0.14112
+```
+
+Tentu saja kita dapat menghilangkan tanda titik jika kita menulis metode
+vektor khusus dari `f`, misalnya melalui `f(A::AbstractArray) = map(f,A)`
+dan ini sama efisiennya dengan `f.(A)`. Meskipun demikian pendekatan tersebut
+mengharuskan kita untuk menentukan terlebih dahulu fungsi apa yang ingin
+divektorisasi.
+
+Secara umum, `f.(args...)` ekuivalen dengan `broadcast(f, args...)` yang
+memungkinkan kita untuk mengoperasikan fungsi ke beberapa array (bahkan
+array yang memiliki bentuk berbeda sekalipun), atau campuran array dan skalar.
+Sebagai contoh, jika kita memiliki `f(x,y) = 3x + 4y`, maka `f.(pi,A)`
+akan mengembalikan array baru yang terdiri dari `f(pi,a)` untuk setiap `a`
+di dalam `A`, dan `f.(vector1,vector2)` akan mengembalikan vektor baru yang
+terdiri dari `f(vector1[i], vector2[i])` untuk setiap indeks `i` (akan melemparkan
+eksepsi apabila vektor-vektor tersebut memiliki panjang yang berbeda).
+
+```julia-repl
+julia> f(x,y) = 3x + 4y;
+
+julia> A = [1.0, 2.0, 3.0];
+
+julia> B = [4.0, 5.0, 6.0];
+
+julia> f.(pi, A)
+3-element Array{Float64,1}:
+ 13.4248
+ 17.4248
+ 21.4248
+
+julia> f.(A, B)
+3-element Array{Float64,1}:
+ 19.0
+ 26.0
+ 33.0
+```
+
+Lebih jauh, pemanggilan bersarang `f.(args...)` akan digabungkan menjadi satu
+loop `broadcast`. Contohnya `sin.(cos.(X))` ekuivalen dengan
+`broadcast(x -> sin(cos(x)), X)`, sama dengan
+`[sin(cos(x)) for x in X]`: yakni hanya ada satu loop terhadap `X`, dan satu
+array akan dialokasikan sebagai hasil.
+(Sebagai perbandingan, dalam bahasa teknis-komputasi tipikal, `sin(cos(X))` akan pertama-tama
+mengalokasikan satu array sementara untuk `tmp=cos(X)`, dan kemudian menghitung
+`sin(tmp)` pada loop terpisah dan mengalokasikan array kedua.)
+Fusi loop ini bukan optimisasi dari kompiler yang bisa saja terjadi dan bisa saja
+tidak, namun merupakan garansi sintaks ketika pemanggilan bersarang `f.(args...)`
+ditemui. Secara teknik fusi loop akan berhenti ketika pemanggilan fungsi non-dot
+ditemukan; misalkanya dalam `sin.(sort(cos.(X)))`, loop `sin` dan `cos` tidak
+dapat digabungkan karena adanya pemanggilan `sort` di antaranya.
+
+Efisiensi maksimum biasanya dapat diperoleh jika array keluaran dari operasi
+tervektorisasi ini dialokasikan sebelumnya (*pre-allocated*), sehingga pemanggilan
+berulang tidak mengalokasi array baru setiap kali pemanggilan dilakukan. Sintaks
+yang tersedia untuk keperluan ini adalah `X .= ...`, yang ekuivalen dengan
+`broadcast!(identity, X, ...)` dengan catata bahwa loop `broadcast!` difusikan
+dalam kasus pemanggilan bersarang fungsi dot. Sebagai contoh
+`X .= sin.(Y)` ekuivalen dengan `broadcast!(sin, X, Y)`, dan menimpa `X` dengan
+`sin.(Y)`. Jika ruas kiri adalah ekspresi dengan indeks array, misalnya
+`X[2:end] .= sin.(Y)` maka akan ditranslasi ke
+`broadcast!` pada suatu `view`, misalnya `broadcast!(sin, view(X, 2:endof(X)), Y)`
+sehingga ruas kiri akan diperbarui di tempat.
+
+Karena pemambahan dot pada banyak operasi dan pemanggilan fungsi akan menghasilkan
+ekspresi yang sulit dibaca, makro `@.` disediakan untuk menkonversi setiap
+pemanggilan fungsi, operasi, dan *assignmen* ke dalam ekspresi pada versi dot.
+
+```julia-repl
+julia> Y = [1.0, 2.0, 3.0, 4.0];
+
+julia> X = similar(Y); # pre-allocate output array
+
+julia> @. X = sin(cos(Y)) # equivalent to X .= sin.(cos.(Y))
+4-element Array{Float64,1}:
+  0.514395
+ -0.404239
+ -0.836022
+ -0.608083
+```
+
+Operator binary maupun unary seperti `.+` juga diperlakukan dengan mekanisme
+yang sama: mereka ekuivalen dengan pemanggilan `broadcast` dan difusikan dengan
+pemanggilan dot bersarang. `X .+= Y` dan sebagainya ekuivalen dengan
+`X .= X .+ Y` dan menghasilkan *assignment* terfusi di tempat.
