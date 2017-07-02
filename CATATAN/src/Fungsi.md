@@ -133,3 +133,61 @@ hypot (generic function with 1 method)
 julia> hypot(3, 4)
 5.0
 ```
+
+Terdapat tiga kemungkinan titik kembalian dari fungsi ini, mengembalika nilai
+dari tiga ekspresi berbeda, bergantung dari nilai `x` dan `y`. Kata kunci
+`return` pada baris terakhir dapat dihilangkan karena ekspresi ini adalah
+ekspresi terakhir dari tubuh fungsi.
+
+## Operator adalah fungsi
+
+Dalam Julia, sebagian besar operator adalah fungsi yang memiliki sintaks
+khusus.
+(Pengecualian dalam hal ini
+adalah operator dengan semantik evaluasi khusus seperti
+`&&` dan `||`. Operator tersebut tidak dapat diimplementasikan sebagai fungsi
+karena evaluasi *short-circuit* memerlukan operan tidak dievaluasi sebelum
+operasi dari operator.)
+Dengan demikian kita juga dapat mengoperasikan operator
+dengan menggunakan sintaks fungsi yang menggunakan
+tanda kurung seperti halnya fungsi lain.
+
+```julia-repl
+julia> 1 + 2 + 3
+6
+
+julia> +(1,2,3)
+6
+```
+
+Bentuk infiks ini ekuivalen dengan bentuk evaluasi fungsi.
+Faktanya, secara internal, ekspresi pertama ditranslasikan menjadi pemanggilan
+fungsi. Hal ini juga berarti bahwa kita dapat melakukan *assignment* dan
+melemparkan operator seperti `+()` dan `*()` seperti halnya variabel dan nilai
+fungsi lain.
+
+```julia-repl
+julia> f = +;
+
+julia> f(1,2,3)
+6
+```
+
+Meskipun demikian, dengan nama `f`, fungsi ini tidak dapat mendukung notasi
+infiks seperti halnya `+`.
+
+## Operator dengan nama khusus
+
+| Ekspresi | Pemanggilan |
+| ---------| ----------- |
+| `[A B C ...]` | `hcat()` |
+| `[A; B; C; ...]` | `vcat()` |
+| `[A B; C D; ...]` |`hvcat()` |
+| `A'` | `ctranspose()` |
+| `A.'` | `transpose()` |
+| `1:n` | `colon()` |
+| `A[i]` | `getindex'()` |
+| `A[i] = x` | `setindex!()` |
+
+Fungsi tersebut termasuk dalam modul `Base.Operators` meskipun mereka tidak
+memiliki nama operator.
