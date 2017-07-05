@@ -112,7 +112,7 @@ julia> Meta.show_sexpr(ex3)
 (:call, :/, (:call, :+, 4, 4), 2)
 ```
 
-Symbols
+### Simbol
 
 Karakter `:` memiliki dua kegunaan sintaktis pada Julia. Bentuk pertama menghasilkan
 objek `Symbol` yang diinterpretasikan sebagai *interned string* dan digunakan
@@ -154,4 +154,172 @@ julia> :(:)
 
 julia> :(::)
 :(::)
+```
+
+## Ekspresi dan evaluasi
+
+### Kutipan (*Quoting*)
+
+Kegunaan sintaktik kedua dari karakter `:` adalah untuk membuat objek
+ekspresi tanpa menggunakan konstruktor `Expr` eksplisit. Proses ini dikenal
+dengan nama kutipan. Karakter `:`, diikuti dengan tanda kurung di awal dan
+di akhir suatu pernyataan dari kode Julia, akan menghasilkan objek `Expr`
+berdasarkan kode yang dikutip. Berikut ini adalah contohnya:
+
+```julia-repl
+julia> ex = :(a+b*c+1)
+:(a + b * c + 1)
+
+julia> typeof(ex)
+Expr
+```
+
+Perhatikan bahwa ekpresi yang ekuivalen dapat dikonstruksi dengan menggunakan
+`parse()` atau bentuk `Expr` sesuai:
+
+```julia-repl
+julia>      :(a + b*c + 1)  ==
+       parse("a + b*c + 1") ==
+       Expr(:call, :+, :a, Expr(:call, :*, :b, :c), 1)
+true
+```
+
+Ekspresi yang disediakan oleh parser pada umumnya hanya mengandung simbol,
+objek `Expr` lain, dan nilai literal sebagai argumennya, di mana ekpresi
+dikonstruksi oleh kode Julia dapat memiliki nilai *runtime* yang berbeda
+tanpa bentuk literal dalam argumennya. Pada contoh khusus ini, `+` dan `a`
+adalah simbol `*(b,c)` adalah subekspresi, dan `1` adalah literal integer
+bertanda 64-bit.
+
+Terdapat bentuk sintaktik kedua untuk mengutip ekspresi jamak: blok kode yang
+diapit di dalam `quote ... end`. Perhatikan bahwa bentuk ini menghasilkan
+elemen `QuoteNode` pada pohon ekspresi, yang harus ditinjau ketika memanipulasi
+secara langsung pohon ekspresi yang dihasilkan dari blok `quote`. Untuk keperluan
+lain, `:( ... )` dan `quote ... end` diperlakukan sama.
+
+```julia-repl
+julia> ex = quote
+           x = 1
+           y = 2
+           x + y
+       end
+quote  # none, line 2:
+    x = 1 # none, line 3:
+    y = 2 # none, line 4:
+    x + y
+end
+
+julia> typeof(ex)
+Expr
+```
+
+### Interpolasi
+
+Konstruksi langsung dari objek `Expr` dengan nilai argumen cukup berguna, namun
+pemanggilannya dapat membosankan dibandingkan dengan sintaks Julia normal.
+Sebagai alternatif, Julia membolehkan penyambungan atau interpolasi literal
+atau ekspresi menjadi ekspresi yang dikutip. Interpolasi dilakukan dengan
+menggunakan prefix `$`.
+
+Pada contoh berikut ini, nilai literal dari `a` akan diinterpolasi:
+
+```julia-repl
+julia> a = 1;
+
+julia> ex = :($a + b)
+:(1 + b)
+```
+
+Interpolasi ke ekspresi yang tidak dikutip tidak didukung oleh Julia dan akan
+menghasilkan `compile-time error`:
+
+```julia-repl
+julia> $a + b
+ERROR: unsupported or misplaced expression $
+ ...
+```
+
+Pada contoh ini, tupel `(1,2,3)` diinterpolasi sebagai ekspresi ke dalam
+tes kondisional:
+
+```julia-repl
+julia> ex = :(a in $:((1,2,3)) )
+:(a in (1, 2, 3))
+```
+
+Interpolasi simbol ke dalam suatu ekspresi bersarang memerlukan enklosing
+setiap simbol dalam blok pengutipan.
+
+```julia-repl
+julia> :( :a in $( :(:a + :b) ) )
+                   ^^^^^^^^^^
+                   quoted inner expression
+```
+
+Penggunaan `$` untuk interpolasi ekspresi mirip dengan interpolasi string
+dan interpolasi perintah. Interpolasi ekspresi memungkin kita untuk menulis
+kontruksi ekspresi secara programatik dengan mudah.
+
+### `eval()` dan efek
+
+Diberikan suatu objek ekspresi, kita dapat membuat Julia untuk mengevaluasi
+ekspresi tersebut pada ruang lingkup global dengan menggunakan `eval()`:
+
+```julia-repl
+julia> :(1 + 2)
+:(1 + 2)
+
+julia> eval(ans)
+3
+
+julia> ex = :(a + b)
+:(a + b)
+
+julia> eval(ex)
+ERROR: UndefVarError: b not defined
+[...]
+
+julia> a = 1; b = 2;
+
+julia> eval(ex)
+3
+```
+
+Setiap modul memiliki fungsi `eval()` tersendiri yang mengevaluasi ekspresi
+dalam ruang lingkup global dari modul tersebut. Eskpresi yan dilemparkan ke
+`eval()` tidak hanyak dibatasi pada pengembalian nilai, mereka juga dapat
+memiliki efek samping yang mengubah keadaan dari lingkungan modul yang
+melingkupinya.
+
+```julia-repl
+julia> ex = :(x = 1)
+:(x = 1)
+
+julia> x
+ERROR: UndefVarError: x not defined
+
+julia> eval(ex)
+1
+
+julia> x
+1
+```
+
+Pada contoh di atas evaluasi dari suatu objek ekspresi dapat mengakibatkan
+suatu nilai memiliki nilai yang diberikan pada variabel global `x`.
+
+Karena ekspresi adalah objek `Expr` yang dapat dikonstruksi secara programatik
+dan kemudian dievaluasi, kita dapat secara dinamik menghasilkan kode pada
+yang kemudian dapat dievaluasi dengan `eval()`. Berikut ini adalah contoh sederhana
+
+```julia-repl
+julia> a = 1;
+
+julia> ex = Expr(:call, :+, a, :b)
+:(1 + b)
+
+julia> a = 0; b = 2;
+
+julia> eval(ex)
+3
 ```
