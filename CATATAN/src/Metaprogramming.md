@@ -378,3 +378,155 @@ julia> ex = make_expr2(:+, 1, Expr(:call, :*, 5, 8))
 julia> eval(ex)
 42
 ```
+
+## Makro
+
+Makro menyediakan sebuah metode untuk menyertakan suatu kode yang dibangun
+pada tubuh sebuah program. Sebuah makro akan memetakan tupel argumen menjadi
+suatu ekspresi, dan ekspresi yang dihasilkan akan di-compile secara langsung
+tanpa memerlukan pemanggilan `eval()`. Argumen dari makro dapat berupa ekspresi,
+nilai literal, dan simbol.
+
+### Dasar makro
+
+Berikut ini adalah contoh makro sederhana:
+
+```julia-repl
+julia> macro sayhello()
+           return :( println("Hello, world!") )
+       end
+@sayhello (macro with 1 method)
+```
+
+Pada sintaks Julia makro dinyatakan dengan sintaks khusus: menggunakan karakter
+`@`, diikuti dengan nama unik yang dideklarasi dalam blok `macro NAME ... end`.
+Dalam contoh ini, *compiler* akan mengganti semua instans dari `@sayhello` dengan
+
+```julia
+:( println("Hello, world!") )
+```
+
+Ketika `@sayhello` dimasukkan ke dalam REPL, ekspresi akan dieksekusi langsung
+sehingga kita hanya melihat hasilnya saja:
+
+```julia-repl
+julia> @sayhello()
+Hello, world!
+```
+
+Sekarang, tinjau makro yang lebih kompleks:
+
+```julia-repl
+julia> macro sayhello(name)
+           return :( println("Hello, ", $name) )
+       end
+@sayhello (macro with 1 method)
+```
+
+Makro ini mengambil satu argumen: `name`. Ketika simbol `@sayhello` ditemui,
+ekpresi yang dikutip akan diekspansi untuk menginterpolasi nilai dari argumen
+menjadi ekspresi akhir:
+
+```julia-repl
+julia> @sayhello("human")
+Hello, human
+```
+
+Kita dapat melihat ekspresi akhir dengan menggunakan fungsi `macroexpand()`
+(fungsi ini sangat berguna untuk *debugging* makro):
+
+```julia-repl
+julia> ex = macroexpand( :(@sayhello("human")) )
+:((println)("Hello, ", "human"))
+
+julia> typeof(ex)
+Expr
+```
+
+Kita dapat melihat bahwa literal "human" telah diinterpolasi menjadi ekspresi.
+
+Terdapat juga makro `@macroexpand` yang mungkin lebih mudah untuk digunakan.
+
+```julia-repl
+julia> @macroexpand @sayhello "human"
+:((println)("Hello, ", "human"))
+```
+
+### Mengapa menggunakan makro?
+
+Kita telah melihat bahwa fungsi `f(::Expr...) -> Expr` pada bagian sebelumnya.
+Faktanya, `macroexpand()` termasuk contoh fungsi tersebut. Jadi, mengapa ada
+makro?
+
+Makro diperlukan karena makro dieksekusi ketika kode di-*parse*, sehingga
+makro memungkinkan programer untuk menghasilkan dan memasukkan fragmen kode
+khusus sebelum seluruh program dijalankan. Untuk mengilustrasikan perbedaan ini,
+tinjau contoh berikut.
+
+```julia-repl
+julia> macro twostep(arg)
+           println("I execute at parse time. The argument is: ", arg)
+           return :(println("I execute at runtime. The argument is: ", $arg))
+       end
+@twostep (macro with 1 method)
+
+julia> ex = macroexpand( :(@twostep :(1, 2, 3)) );
+I execute at parse time. The argument is: $(Expr(:quote, :((1, 2, 3))))
+```
+
+Pemanggilan pertama dari `println()` dieksekusi ketika `macroexpand()`
+dipanggil. Ekspresi yang dihasilkan hanyak mengandung `println`
+kedua:
+
+```julia-repl
+julia> typeof(ex)
+Expr
+
+julia> ex
+:((println)("I execute at runtime. The argument is: ", $(Expr(:copyast, :($(QuoteNode(:((1, 2, 3)))))))))
+
+julia> eval(ex)
+I execute at runtime. The argument is: (1, 2, 3)
+```
+
+### Pemanggilan makro
+
+Makro dapat dipanggil dengan menggunakan sintaks umum berikut.
+
+```julia
+@name expr1 expr2 ...
+@name(expr1, expr2, ...)
+```
+
+Kita dapat menggunakan kedua sintaks di atas, namun sangat disarankan hanya
+menggunakan salah satu dari sintaks tersebut saja.
+Perhatikan perbedaan antara kedua sintaks tersebut. Pada sintaks kedua tidak
+ada spasi setelah `@name`. Sintaks di bawah ini akan melemparkan tupel
+`(expr1, expr2, ...)` sebagai argumen ke makro:
+
+```julia
+@name (expr1, expr2, ...)
+```
+
+Sangat penting untuk menekankan bahwa makro menerima argumen mereka sebagai
+ekspresi, literal, atau simbol. Salah satu cara untuk mengeksplorasi argumen
+makro adalah dengan memanggil fungsi `show()` di dalam tubuh makro.
+
+```julia-repl
+julia> macro showarg(x)
+           show(x)
+           # ... remainder of macro, returning an expression
+       end
+@showarg (macro with 1 method)
+
+julia> @showarg(a)
+:a
+
+julia> @showarg(1+1)
+:(1 + 1)
+
+julia> @showarg(println("Yo!"))
+:(println("Yo!"))
+```
+
+### Membangun makro lanjut
