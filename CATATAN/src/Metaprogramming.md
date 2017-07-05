@@ -323,3 +323,58 @@ julia> a = 0; b = 2;
 julia> eval(ex)
 3
 ```
+
+Nilai dari `a` digunakan untuk mengkonstruksi `ex` yang diaplikasikan pada
+fungsi `+` ke nilai 1 dan variabel `b`. Perhatikan perbedaan penting antara
+bagaiman cara `a` dan `d` digunakan:
+
+- Nilai dari variabel `a` pada saat konstruksi ekspresi digunakan sebagai nilai
+  langsung pada ekspresi. Dengan demikian, nilai dari `a` ketika ekspresi
+  dievaluasi tidak lagi penting: nilai dari ekspresi sudah `1`, tidak bergantung
+  pada nilai `a` lagi nantinya.
+
+- Di sisi lain, simbol `:b` digunakan pada konstruksi ekspresi, sehingga nilai
+  variabel `b` pada waktu konstruksi tidak penting, `:b` hanyalah sebuah simbol
+  dan variabel `b` bahkan tidak harus didefinisikan. Akan tetapi pada saat
+  evaluasi, nilai dari simbol `:b` akan disubstitusikan dengan sesuai dengan
+  definisi `b` yang tersedia.
+
+### Fungsi pada ekspresi
+
+Sebuah fungsi dapat menerima satu atau lebih objek `Expr` sebagai argumen
+dan kemudian mengembalikan `Expr` yang lain, seperti pada contoh berikut.
+
+```julia-repl
+julia> function math_expr(op, op1, op2)
+           expr = Expr(:call, op, op1, op2)
+           return expr
+       end
+math_expr (generic function with 1 method)
+
+julia>  ex = math_expr(:+, 1, Expr(:call, :*, 4, 5))
+:(1 + 4 * 5)
+
+julia> eval(ex)
+21
+```
+
+Sebagai contoh lain, berikut ini adalah sebuah fungsi yang menggandakan sembarang
+argumen numerik, namun tidak melakukan apa-apa jika argumennya adalah objek `Expr`:
+
+```julia-repl
+julia> function make_expr2(op, opr1, opr2)
+           opr1f, opr2f = map(x -> isa(x, Number) ? 2*x : x, (opr1, opr2))
+           retexpr = Expr(:call, op, opr1f, opr2f)
+           return retexpr
+       end
+make_expr2 (generic function with 1 method)
+
+julia> make_expr2(:+, 1, 2)
+:(2 + 4)
+
+julia> ex = make_expr2(:+, 1, Expr(:call, :*, 5, 8))
+:(2 + 5 * 8)
+
+julia> eval(ex)
+42
+```
