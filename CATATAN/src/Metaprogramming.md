@@ -387,7 +387,7 @@ suatu ekspresi, dan ekspresi yang dihasilkan akan di-compile secara langsung
 tanpa memerlukan pemanggilan `eval()`. Argumen dari makro dapat berupa ekspresi,
 nilai literal, dan simbol.
 
-### Dasar makro
+### Dasar-dasar makro
 
 Berikut ini adalah contoh makro sederhana:
 
@@ -529,4 +529,32 @@ julia> @showarg(println("Yo!"))
 :(println("Yo!"))
 ```
 
-### Membangun makro lanjut
+### Membangun makro lanjut (*advanced*)
+
+Berikut ini adalah definisi makro Julia standard `@assert`:
+
+```julia-repl
+macro assert(ex)
+    return :( $ex ? nothing : throw(AssertionError($(string(ex)))) )
+end
+```
+
+Makro ini dapat digunakan sebagai berikut:
+
+```julia-repl
+julia> @assert 1==1.0
+
+julia> @assert 1==0
+ERROR: AssertionError: 1 == 0
+ ...
+```
+
+Sebagai ganti dari sintaks yang tertulis, makro dapat diekspansi pada saat
+`parse time` untuk mengembalikan hasil. Hal ini ekuivalen dengan menuliskan:
+
+```julia
+1==1.0 ? nothing : throw(AssertionError("1==1.0"))
+1==0 ? nothing : throw(AssertionError("1==0"))
+```
+
+Yaitu, pada pemanggilan pertama, ekspresi `:(1==1.0)` dibagi
