@@ -557,4 +557,83 @@ Sebagai ganti dari sintaks yang tertulis, makro dapat diekspansi pada saat
 1==0 ? nothing : throw(AssertionError("1==0"))
 ```
 
-Yaitu, pada pemanggilan pertama, ekspresi `:(1==1.0)` dibagi
+Yaitu, pada pemanggilan pertama, ekspresi `:(1==1.0)` dibagi menjadi slot
+kondisi tes, sedangkan nilai dari `string(:(1==1.0))` dibagi menjadi
+slot pesan penegasan. Seluruh ekspresi, sebagaimana dikonstruksi, ditempatkan
+pada pohon sintaks di mana makro `@assert` dipanggil. Kemudian pada saat
+eksekusi, jika ekspresi uji bernilai `true`, maka `nothing` dikembalikan.
+Sedangkan jika uji bernilai `false`, pesan kesalahan akan ditampilkan untuk
+mengindikasikan bahwa ekspresi uji bernilai salah.
+Perhatikan bahwa tidak mungkin mengimplementasikan fungsionalitas ini dalam
+sebuah fungsi, karena hanya nilai dari kondisi uji yang tersedia dan tidak
+mungkin untuk menampilkan ekspresi yang dilakukan pada saat uji.
+
+Definisi aktual dari makro `@assert` yang diimplementasikan pada pustaka
+standard Julia lebih rumit daripada contoh sebelumnya.
+Makro ini memungkinkan pengguna untuk memberikan pesan kesalahan kustom,
+selain hanya menampilkan ekspresi gagal dieksekusi. Seperti halnya pada fungsi
+dengan jumlah argument variabel, hal ini dispesifikasikan dengan menggunakan
+elipsis pada argumen terakhir:
+
+```julia-repl
+julia> macro assert(ex, msgs...)
+           msg_body = isempty(msgs) ? ex : msgs[1]
+           msg = string(msg_body)
+           return :($ex ? nothing : throw(AssertionError($msg)))
+       end
+@assert (macro with 1 method)
+```
+
+Dengan definisi ini, makro `@assert` sekarang memiliki dua mode operasi,
+bergantung pada jumlah argumen yang diterima. Jika hanya ada satu argumen,
+tupel ekspresi yang ditangkap oleh `msgs` akan kosong dan akan memiliki
+perilaku yang sama dengan definisi kita sebelumnya. Akan tetapi jika pengguna
+memberikan argumen kedua, argumen ini akan ditampilkan pada tubuh pesan
+sebagai ganti dari ekspresi yang gagal dievaluasi. Kita dapat melakukan inspeksi
+hasil dari ekspansi makro dengan  menggunakan fungsi `macroexpand()`:
+
+```julia-repl
+julia> macroexpand(:(@assert a == b))
+:(if a == b
+        nothing
+    else
+        (throw)((AssertionError)("a == b"))
+    end)
+
+julia> macroexpand(:(@assert a==b "a should equal b!"))
+:(if a == b
+        nothing
+    else
+        (throw)((AssertionError)("a should equal b!"))
+    end)
+```
+
+Terdapat satu kasus lain yang dapat ditangani oleh makro `@assert`: bagaimana
+jika, selain menampilkan pesan `"a harus sama dengan b"`, kita juga ingin
+menampilkan nilai aktual dari `a` dan `b` ? Kita mungkin dapat menggunakan
+interpolasi string pada pesan kustom, misalnya `@assert a==b "a ($a) harus
+sama dengan b ($b)"`, namun hal ini tidak akan bekerja sesuai harapan dengan
+makro di atas. Ingat bahwa string yang diinterpolasi akan ditulis dengan
+menggunakan pemanggilan fungsi `string()`. Bandingkan kasus berikut:
+
+```julia-repl
+julia> typeof(:("a should equal b"))
+String
+
+julia> typeof(:("a ($a) should equal b ($b)!"))
+Expr
+
+julia> dump(:("a ($a) should equal b ($b)!"))
+Expr
+  head: Symbol string
+  args: Array{Any}((5,))
+    1: String "a ("
+    2: Symbol a
+    3: String ") should equal b ("
+    4: Symbol b
+    5: String ")!"
+  typ: Any
+```
+
+Jadi, alih-alih menggunakan string pada `msg_body`, makro akan menerima
+ekspresi penuh yang akan dievaluasi untuk menampilkan pesan kesalahan.
