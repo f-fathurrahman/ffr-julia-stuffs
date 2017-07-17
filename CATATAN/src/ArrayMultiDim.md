@@ -25,4 +25,23 @@ Dalam Julia, semua argumen ke fungsi akan dilemparkan dengan referensi
 (*passed by reference*). Dalam beberapa bahasa komputasi teknis, array dilemparkan
 dengan nilai (*pass by value*) dan hal ini berguna dalam banyak kasus.
 Dalam Julia, modifikasi yang dilakukan pada array input akan terlihat pada
-fungsi lebih atas yang memanggil. Seluruh pustaka array
+fungsi lebih atas yang memanggil. Seluruh pustaka array Julia telah didesain
+agar input tidak dimodifikasi oleh fungsi yang ada dalam pustaka. Kode yang
+ditulis oleh pengguna, jika ingin memiliki kelakuan yang sama, harus membuat
+kopi dari input yang mungkin diubahnya.
+
+## Array
+
+### Fungsi-fungsi dasar
+
+| Fungsi | Deskripsi |
+| ------ | --------- |
+| `eltype(A)` | tipe dari elemen yang terkandung dalam `A` |
+| `length(A)` | jumlah elemen di dalam `A` |
+| `ndims(A)` | jumlah dimensi `A` |
+| `size(A)` | tupel yang berisi dimensi-dimensi dari `A` |
+| `suze(A,n)` | ukuran `A` sepanjang dimensi ke-`n` |
+| `indices(A)` | tupel yang berisi indeks valid dari `A` |
+| `eachindex(A)` | iterator efisien untuk setiap posisi dalam `A` |
+| `stride(A,k)` | stride (jarak indeks linear antara elemen yang berdekatan) sepanjand dimensi `k` |
+| `strides(A)` | tupel dari stride pada masing-masing dimensi dari `A` |
