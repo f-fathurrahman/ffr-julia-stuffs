@@ -7,7 +7,7 @@ ex(x::bar) = println("bar")
 test(x::bar) = ex(x)
 
 struct foo <: bar
-  x :: Int
+    x :: Int
 end
 
 test(foo(5))
