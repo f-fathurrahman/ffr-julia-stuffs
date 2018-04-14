@@ -8,6 +8,7 @@ function test_main()
         y[i] = sin(x[i])
     end
     GR.plot(x, y)
+    GR.savefig("TEMP_simpleplot.pdf")
 end
 
 test_main()
