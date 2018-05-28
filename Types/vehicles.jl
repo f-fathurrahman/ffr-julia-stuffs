@@ -1,4 +1,4 @@
-type Contact
+abstract type Contact
   name :: AbstractString
   email :: AbstractString
   phone :: AbstractString
@@ -23,7 +23,7 @@ abstract Boat <: Vehicle
 abstract Powerboat <: Boat
 
 
-type Ford <: Car
+abstract type Ford <: Car
   owner:: Contact
   model:: AbstractString
   fuel:: AbstractString

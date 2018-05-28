@@ -1,8 +1,8 @@
-type Atom
+mutable struct Atom
   name::AbstractString
 end
 
 mutable struct Wavefun
-  dat::Array{Complex128}
+  dat::Array{ComplexF64}
 end
 
