@@ -8,6 +8,9 @@ function call_simple()
 
     retval = ccall( (:simple,"./simple.so"), Int32,
                     (Int32, Ptr{Int32}, Ptr{Float64}), N, Ns_, data )
+
+    println("Ns_ = ", Ns_)
+    println("data = ", data)
     
     println("\nretval = ", retval)
 end

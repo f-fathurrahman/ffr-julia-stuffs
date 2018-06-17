@@ -8,9 +8,15 @@ int simple( int N, int *Ns, double *data )
     printf("i = %d, Ns = %d\n", i, Ns[i]);
   }
 
+  // Modify Ns
+  Ns[2] = 44;
+
   for( i = 0; i < N; i++ ) {
     printf("%d %f\n", i, data[i]);
   }
+
+  // Modify data
+  data[4] = 1.2345;
 
   return 123;
 }
