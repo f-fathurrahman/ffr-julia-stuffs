@@ -1,3 +1,5 @@
+using InteractiveUtils
+
 # Using global variable !!!
 level = 0
 
