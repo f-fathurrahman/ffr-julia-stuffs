@@ -1,5 +1,3 @@
-using Printf
-
 struct MyType
     x::Int
     y::Int
