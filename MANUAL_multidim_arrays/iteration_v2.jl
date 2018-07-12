@@ -42,6 +42,19 @@ function using_eachindex_v2()
 end
 
 
+function using_eachindex_v3()
+    Nkpt = 4
+    Ngw = [300, 400, 300, 400]
+    Nstates = 5
+    psik = init_random_psik(Nkpt, Ngw, Nstates)
+    alpha = 0.5
+    for psi in psik
+        for i in eachindex(psi)
+            psi[i] = alpha*psi[i]
+        end
+    end
+end
+
 function using_3d_array()
     Nkpt = 4
     Ngw = [300, 400, 300, 400]
@@ -72,8 +85,8 @@ function using_3d_array_eachindex()
     srand(1234)
     psik = rand(ComplexF64, Ngwx, Nstates, Nkpt)
     alpha = 0.5
-    for ik in eachindex(psik[1,1,:])
-        for ist in eachindex(psik[1,:,1])
+    for ik in eachindex( psik[1,1,:] )
+        for ist in eachindex( psik[1,:,1] )
             for ig = 1:Ngw[ik]
                 psik[ig,ist,ik] = alpha*psik[ig,ist,ik]
             end
@@ -84,11 +97,14 @@ end
 println("\nusing_eachindex:")
 @btime using_eachindex()
 
-println("\nusing_3d_array:")
-@btime using_3d_array()
-
 println("\nusing_eachindex_v2:")
 @btime using_eachindex_v2()
+
+println("\nusing_eachindex_v3:")
+@btime using_eachindex_v3()
+
+println("\nusing_3d_array:")
+@btime using_3d_array()
 
 println("\nusing_3d_array_eachindex:")
 @btime using_3d_array_eachindex()
