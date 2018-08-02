@@ -1,5 +1,7 @@
 import GR
 
+# Set GKS_WSTYPE=pdf or 102 to output in pdf
+
 x = zeros(29)
 y = zeros(29)
 
@@ -19,24 +21,24 @@ end
 end
 
 
-GR.setcharheight(24.0/500)
+GR.setcharheight(12.0/500)
 GR.settextalign(GR.TEXT_HALIGN_CENTER, GR.TEXT_VALIGN_TOP)
-GR.textext(0.5, 0.9, "Surface Example")
-(tbx, tby) = GR.inqtextext(0.5, 0.9, "Surface Example")
-GR.fillarea(tbx, tby)
+GR.textext(0.5, 0.9, "Surface Example by efefer")
+#(tbx, tby) = GR.inqtextext(0.5, 0.9, "Surface Example")
+#GR.fillarea(tbx, tby)
 
 GR.setwindow(-2, 12, -7, 7)
-GR.setspace(-80, 200, 45, 70)
+GR.setspace(-80, 200, 45, 45)  # changing the view
 
-GR.setcharheight(14.0/500)
+GR.setcharheight(10.0/500)
 GR.axes3d(1, 0, 20, -2, -7, -80, 2, 0, 2, -0.01)
 GR.axes3d(0, 1,  0, 12, -7, -80, 0, 2, 0,  0.01)
 GR.titles3d("X-Axis", "Y-Axis", "Z-Axis")
 
 GR.surface(x, y, z, 3)
 GR.surface(x, y, z, 1)
+#GR.surface(x,y,z, 2)  # black ?
+#GR.surface(x, y, z, 4)
 
 GR.updatews()
-
-
 
