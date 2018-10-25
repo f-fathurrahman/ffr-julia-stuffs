@@ -1,4 +1,10 @@
-About using PyCall.
+# Base.summarysize
+
+useful for getting allocated memory for an object.
+
+
+# About using PyCall.
+
 The first time I installed PyCall, it tried to install the required package Conda.
 Conda by default will download Miniconda (which is quite large for me, despite
 the name *Mini*).
