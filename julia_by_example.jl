@@ -1,3 +1,6 @@
+using Printf
+
+
 # Based on: http://samuelcolvin.github.io/JuliaByExample/ 
 # 
 # "execute" the script using command include("src.jl")
