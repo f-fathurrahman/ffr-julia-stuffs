@@ -1,3 +1,5 @@
+using LinearAlgebra
+
 function do_loop( Ns::Int64, cutoff::Float64 )
     v1 = rand(3,Ns)
     Ng = 0
@@ -24,9 +26,8 @@ function do_loop_no_inbounds( Ns::Int64, cutoff::Float64 )
 end
 
 function test_main()
-    @time Ng = do_loop( 500_000, 5000.0 )
-    @time Ng = do_loop_no_inbounds( 500_000, 5000.0 )
+    Ng = do_loop( 500_000, 5000.0 )
+    Ng = do_loop_no_inbounds( 500_000, 5000.0 )
 end
 
-test_main()
 test_main()
