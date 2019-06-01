@@ -4,9 +4,9 @@ using LaTeXStrings
 fig = @pgf Axis(
     {
         xlabel = L"x",
-        ylabel = L"f(x) = x^2 - x + 4"
+        ylabel = L"f(x) = x^2 - x + 4",
     },
-    Plot(
+    PlotInc({samples=10},
         Expression("x^2 - x + 4")
     )
 )
