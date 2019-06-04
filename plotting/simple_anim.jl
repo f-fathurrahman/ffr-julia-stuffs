@@ -16,14 +16,16 @@ end
 #test_01()
 
 function my_func1(x::Vector{Float64}, t::Float64)
-    return sin.(2π*x*t)
+    return sin(2π*t).*x
 end
 
 function test_02()
     x = collect(range(0,stop=2π,length=100))
     anim = plt.Animation()
+    Aa = cos.(x)
     for t in range(0,stop=0.5,length=10)
-        plt.plot(x, my_func1(x,t))
+        plt.plot(x, my_func1(Aa,t))
+        plt.ylims!(-1.0,1.0)
         plt.frame(anim)
     end
     plt.gif(anim, "TEMP_anim2.gif")
