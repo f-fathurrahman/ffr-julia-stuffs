@@ -12,23 +12,42 @@ mutable struct Wavefunction
     wavedesc::Ref{WaveDesc}
 end
 
-function create_wavefunction()
-    Ns = (3,3,3)
-    Npoints = prod(Ns)
-    idxr2g = rand(1:Npoints,Npoints)
-    dVol = 0.1
+function create_rand_wavefunction( wavedesc::WaveDesc )
+    Npoints = prod(wavedesc.Ns)
     data = rand(Float64,Npoints)
-    wavedesc = WaveDesc(Ns,idxr2g,dVol)
     wf = Wavefunction(data, Ref(wavedesc))
     return wf
 end
 
 
 function main()
-    wf = create_wavefunction()
-    println(wf)
-    println(wf.wavedesc.x.dVol)
-    wf.wavedesc.x.dVol = 0.01
+    
+    Ns = (3,3,3)
+    Npoints = prod(Ns)
+    idxr2g = rand(1:Npoints,Npoints)
+    dVol = 0.1
+    wavedesc = WaveDesc(Ns,idxr2g,dVol)
+
+    wf1 = create_rand_wavefunction( wavedesc )
+    wf2 = create_rand_wavefunction( wavedesc )
+
+    println("sizeof wf1 = ", Base.summarysize(wf1))
+    println("sizeof wf2 = ", Base.summarysize(wf2))
+
+    println("size of wavedesc = ", Base.summarysize(wavedesc))
+    println("size of wf1.data = ", Base.summarysize(wf1.data))
+    println("size of wf1.wavedesc = ", Base.summarysize(wf1.wavedesc))
+
+    println(27*8)
+
+    # try to modify field of wavedesc
+    println("Orig dVol = ", wf1.wavedesc.x.dVol)
+    # modify via wf1
+    wf1.wavedesc.x.dVol = 1.0
+    println()
+
+    println("wf1 dVol = ", wf1.wavedesc.x.dVol)
+    println("wf2 dVol = ", wf2.wavedesc.x.dVol)
 end
 
 main()
