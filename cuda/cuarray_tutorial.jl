@@ -1,5 +1,6 @@
 using Test
 using BenchmarkTools
+using CuArrays
 
 function test_01()
     N = 2^20
@@ -76,3 +77,28 @@ function test_03(; testing=false)
     println("test_03 is finished")
 end
 #test_03()
+
+
+function add_broadcast!(y, x)
+    CuArrays.@sync y .= y .+ x
+    return nothing
+end
+
+function test_04(; testing=false)
+
+    N = 2^20
+    x = fill(1.0, N)
+    y = fill(2.0, N)
+
+    x_d = CuArrays.cufill(1.0, N)
+    y_d = CuArrays.cufill(2.0, N)
+
+    println(typeof(x_d))
+
+    @btime sequential_add!($y, $x)
+
+    @btime add_broadcast!($y_d, $x_d)
+
+    println("test_04 is finished")
+end
+test_04()
