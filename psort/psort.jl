@@ -41,10 +41,12 @@ function psort!(v, lo::Int=1, hi::Int=length(v))
     return v
 end
 
-a = rand(20000000);
+println("Nthreads = ", Threads.nthreads())
+
+a = rand(30_000_000);
 
 b = copy(a)
-sort!(b, alg = MergeSort);
+psort!(b);
 
 b = copy(a)
-@time sort!(b, alg = MergeSort);
+@time psort!(b);
