@@ -1,4 +1,6 @@
 push!(LOAD_PATH, pwd())
+
+using Printf
 using Mod1
 
 function test1()
