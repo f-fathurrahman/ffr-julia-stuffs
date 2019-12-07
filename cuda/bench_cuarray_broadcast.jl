@@ -13,11 +13,14 @@ function main()
     x_d = CuArrays.fill(1.0, N)
     y_d = CuArrays.fill(2.0, N)
 
-    println(typeof(x_d))
+    #@btime sequential_add!($y, $x)
+    #@btime cuarray_broadcast!($y_d, $x_d)
 
-    @btime sequential_add!($y, $x)
+    sequential_add!(y, x)
+    cuarray_broadcast!(y_d, x_d)
 
-    @btime add_broadcast!($y_d, $x_d)
+    @time sequential_add!(y, x)
+    @time cuarray_broadcast!(y_d, x_d)
 
 end
 
