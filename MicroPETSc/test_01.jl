@@ -9,6 +9,8 @@ function test_main()
     v = PetscVec()
     setSize!(vec, n_local=(Int32)(4))
     #@test vec.sized
+
+    finalize()
 end
 
 test_main()

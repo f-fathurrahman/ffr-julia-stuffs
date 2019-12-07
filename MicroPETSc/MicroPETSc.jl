@@ -2,7 +2,7 @@ module MicroPETSc
 
 import MPI
 
-const PETSC_DIR = "/home/efefer/WORKS/PETSC/petsc-3.11.3/arch-linux2-c-debug"
+const PETSC_DIR = "/opt/petsc-3.11.3_openmpi-2.2.1_debug"
 const PETSC_LIB = joinpath(PETSC_DIR, "lib", "libpetsc.so")
 
 function _petsc_lib()
@@ -16,7 +16,7 @@ function finalize()
            PetscErrorCode,
            ()
     )
-    MPI.Finalize()
+    #MPI.Finalize()
 end
 
 function __init__()
@@ -33,7 +33,7 @@ function __init__()
     )
     
     # Cleanup at the end
-    atexit(finalize)
+    #atexit(finalize)
 end
 
 include("Vec.jl")
