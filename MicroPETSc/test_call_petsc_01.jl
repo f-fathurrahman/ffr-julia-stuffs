@@ -1,8 +1,10 @@
 using Printf
 import MPI
 
-const PETSC_DIR = "/opt/petsc-3.11.3_openmpi-2.2.1_debug"
-const PETSC_LIB = joinpath(PETSC_DIR, "lib", "libpetsc.so")
+#const PETSC_DIR = "/opt/petsc-3.11.3_openmpi-2.2.1_debug"
+#const PETSC_LIB = joinpath(PETSC_DIR, "lib", "libpetsc.so")
+
+const PETSC_LIB = "/usr/lib/petsc/lib/libpetsc_real.so"
 
 const PetscErrorCode = Cint
 
