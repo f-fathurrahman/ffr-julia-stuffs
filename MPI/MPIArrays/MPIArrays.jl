@@ -231,18 +231,30 @@ end
 redistribute!(a::MPIArray{T,N}, partition_sizes::Vararg{Any,N})  where {T,N} = copy_into!(a, redistribute(a, partition_sizes...))
 redistribute!(a::MPIArray) = redistribute!(a, size(a.partitioning)...)
 
+
+# This is the operation
 function LinearAlgebra.mul!(y::MPIArray{T,1}, A::MPIArray{T,2}, b::MPIArray{T,1}) where {T}
+    
     forlocalpart!(y) do ly
         fill!(ly,zero(T))
     end
     sync(y)
+    println("This is it")
+    
     (rowrng,colrng) = localindices(A)
+
+    println("rowrng = ", rowrng)
+    println("colrng = ", colrng)
+
     my_b = getblock(b[colrng])
+    
     yblock = y[rowrng]
     my_y = allocate(yblock)
+    
     forlocalpart(A) do my_A
         LinearAlgebra.mul!(my_y,my_A,my_b)
     end
+
     putblock!(my_y,yblock,+)
     sync(y)
     return y

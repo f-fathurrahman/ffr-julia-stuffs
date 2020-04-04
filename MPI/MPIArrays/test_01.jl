@@ -10,7 +10,7 @@ function main()
     x = MPIArray{Float64}(N)
     forlocalpart!( m -> fill!(m, my_rank+0.1), x )
 
-    if my_rank == 1
+    if my_rank == 0
         #display(x); println()
         display(x.localarray); println()
     end
