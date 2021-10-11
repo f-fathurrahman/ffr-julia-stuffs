@@ -1,6 +1,7 @@
 ORIG_*
 TEMP_*
 IMG_*
+OLD_*
 
 a.out
 *.exe
