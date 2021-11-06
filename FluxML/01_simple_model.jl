@@ -1,18 +1,19 @@
-W = rand(2, 5)
-b = rand(2)
+using Flux
 
-predict(x) = W*x .+ b
-loss(x, y) = sum((predict(x) .- y).^2)
+actual(x) = 4x + 2
 
-x, y = rand(5), rand(2)
-println( loss(x, y) )
+println( actual.([1, 2, 3]) )
 
-using Flux.Tracker
+x_train = hcat(0:5...) 
+x_test = hcat(6:10...)
 
-W = param(W)
-b = param(b)
+y_train = actual.(x_train)
+y_test = actual.(x_test)
 
-l = loss(x, y)
-println("l = ", l)
-back!(l)
+model = Dense(1,1)
+println(model.weight)
+println(model.bias)
+
+predict = Dense(1,1)
+println( predict(x_train) )
 
