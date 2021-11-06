@@ -1,7 +1,11 @@
 using Flux
 
 function actual(x)
-    return 4*x^2 + 5
+    return 4*x.^2 .+ 5
+end
+
+function to_quad(x)
+    return x, x^2
 end
 
 function main()
@@ -9,7 +13,7 @@ function main()
     y_train, y_test = actual.(x_train), actual.(x_test)
 
     # Model
-    model = Dense(1,3,σ)
+    model = Dense(2,3,σ)
     lossfunc(x,y) = Flux.Losses.mse(model(x), y)
     opt = Descent(0.1)
     data = [(x_train, y_train)]
