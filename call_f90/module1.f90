@@ -10,6 +10,10 @@ REAL(8), ALLOCATABLE :: gbl_Arr3(:,:)
 REAL(8), ALLOCATABLE :: gbl_Arr4(:,:,:)
 REAL(8), ALLOCATABLE :: gbl_Arr5(:,:,:)
 
+LOGICAL :: gbl_flag1
+CHARACTER :: gbl_char1
+CHARACTER(256) :: gbl_str1
+
 TYPE MyType_T
   INTEGER :: Ndata
   REAL(8), ALLOCATABLE :: D2jl(:,:)
@@ -20,6 +24,7 @@ TYPE(MyType_T) :: mytype
 CONTAINS
 
 SUBROUTINE init_MyModule()
+
   gbl_Arr1 = (/ 1.1d0, 2.2d0, 3.4d0 /)
   gbl_Arr2(1,:) = (/ 1.1d0, 2.2d0, 3.4d0 /)
   gbl_Arr2(2,:) = (/ 2.1d0, 2.3d0, 4.4d0 /)
@@ -41,6 +46,10 @@ SUBROUTINE init_MyModule()
   !allocate(gbl_Arr5(1:3,-1:5,1:2))
   gbl_Arr5(:,:,:) = 777.d0
   gbl_Arr5(1,0,2) = 999.d0
+
+  gbl_flag1 = .true.
+  gbl_char1 = 'F'
+  gbl_str1 = 'this is a string'
 END SUBROUTINE
 
 

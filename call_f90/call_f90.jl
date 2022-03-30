@@ -60,3 +60,20 @@ gbl_Arr5 = reshape(gbl_Arr5,(Ndim1,Ndim2,Ndim3))
 gbl_Arr5 = OffsetArray(gbl_Arr5, 1:3, -3:3, 1:2)
 display(gbl_Arr5); println()
 println(gbl_Arr5[1,0,2])
+
+# Read bool
+ptr_gbl_flag1 = cglobal((:__mymodule_MOD_gbl_flag1, "module1.so"), Bool)
+gbl_flag1 = unsafe_load(ptr_gbl_flag1)
+
+# Read string (ASCII)
+Ndim = 256
+str1 = Vector{Char}(undef,Ndim)
+ptr_gbl_str1 = cglobal((:__mymodule_MOD_gbl_str1, "module1.so"), Int8)
+for i in 1:Ndim
+    str1[i] = Char(unsafe_load(ptr_gbl_str1,i))
+end
+str1 = strip(String(str1)) # Convert to string
+
+ptr_gbl_char1 = cglobal((:__mymodule_MOD_gbl_char1, "module1.so"), Int8)
+char1 = Char(unsafe_load(ptr_gbl_char1))
+
