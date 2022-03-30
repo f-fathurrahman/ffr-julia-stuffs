@@ -8,6 +8,7 @@ REAL(8) :: gbl_Arr1(3)
 REAL(8) :: gbl_Arr2(4,3)
 REAL(8), ALLOCATABLE :: gbl_Arr3(:,:)
 REAL(8), ALLOCATABLE :: gbl_Arr4(:,:,:)
+REAL(8), ALLOCATABLE :: gbl_Arr5(:,:,:)
 
 TYPE MyType_T
   INTEGER :: Ndata
@@ -35,12 +36,18 @@ SUBROUTINE init_MyModule()
   gbl_Arr4(2,:,:) = 2.1d0
   gbl_Arr4(3,:,:) = 3.1d0
 
+  allocate(gbl_Arr5(1:3,-3:3,1:2))
+  !allocate(gbl_Arr5(1:3,1:7,1:2))
+  !allocate(gbl_Arr5(1:3,-1:5,1:2))
+  gbl_Arr5(:,:,:) = 777.d0
+  gbl_Arr5(1,0,2) = 999.d0
 END SUBROUTINE
 
 
 subroutine finalize_MyModule()
   deallocate(gbl_Arr3)
   deallocate(gbl_Arr4)
+  deallocate(gbl_Arr5)
 end subroutine
 
 !----------------------

@@ -32,6 +32,7 @@ end
 gbl_Arr3 = reshape(gbl_Arr3,(3,4))
 display(gbl_Arr3); println()
 
+#
 Ptr_gbl_Arr4 = cglobal( (:__mymodule_MOD_gbl_arr4, "module1.so"), Ptr{Float64} )
 gbl_Arr4 = zeros(Float64,3*4*2)
 ip = 1
@@ -41,3 +42,21 @@ for k in 1:2, j in 1:4, i in 1:3
 end
 gbl_Arr4 = reshape(gbl_Arr4,(3,4,2))
 display(gbl_Arr4); println()
+
+
+#
+using OffsetArrays
+Ptr_gbl_Arr5 = cglobal( (:__mymodule_MOD_gbl_arr5, "module1.so"), Ptr{Float64} )
+Ndim1 = 3
+Ndim2 = 7 # -3:3
+Ndim3 = 2
+gbl_Arr5 = zeros(Float64,Ndim1*Ndim2*Ndim3)
+ip = 1
+for k in 1:Ndim3, j in 1:Ndim2, i in 1:Ndim1
+    gbl_Arr5[ip] = unsafe_load(unsafe_load(Ptr_gbl_Arr5,1),ip)
+    ip = ip + 1
+end
+gbl_Arr5 = reshape(gbl_Arr5,(Ndim1,Ndim2,Ndim3))
+gbl_Arr5 = OffsetArray(gbl_Arr5, 1:3, -3:3, 1:2)
+display(gbl_Arr5); println()
+println(gbl_Arr5[1,0,2])
