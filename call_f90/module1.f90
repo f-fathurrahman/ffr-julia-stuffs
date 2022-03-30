@@ -6,6 +6,8 @@ INTEGER, PARAMETER :: MYPARAM1 = 4
 REAL(8) :: gbl_R = 8.d0
 REAL(8) :: gbl_Arr1(3)
 REAL(8) :: gbl_Arr2(4,3)
+REAL(8), ALLOCATABLE :: gbl_Arr3(:,:)
+REAL(8), ALLOCATABLE :: gbl_Arr4(:,:,:)
 
 TYPE MyType_T
   INTEGER :: Ndata
@@ -22,9 +24,28 @@ SUBROUTINE init_MyModule()
   gbl_Arr2(2,:) = (/ 2.1d0, 2.3d0, 4.4d0 /)
   gbl_Arr2(3,:) = (/ 3.1d0, 2.4d0, 5.4d0 /)
   gbl_Arr2(4,:) = (/ 4.1d0, 2.5d0, 6.4d0 /)
+
+  allocate(gbl_Arr3(3,4))
+  gbl_Arr3(1,:) = 1.1d0
+  gbl_Arr3(2,:) = 2.1d0
+  gbl_Arr3(3,:) = 3.1d0
+
+  allocate(gbl_Arr4(3,4,2))
+  gbl_Arr4(1,:,:) = 1.1d0
+  gbl_Arr4(2,:,:) = 2.1d0
+  gbl_Arr4(3,:,:) = 3.1d0
+
 END SUBROUTINE
 
+
+subroutine finalize_MyModule()
+  deallocate(gbl_Arr3)
+  deallocate(gbl_Arr4)
+end subroutine
+
+!----------------------
 INTEGER FUNCTION five()
+!----------------------
   five = 5
 END FUNCTION
 
