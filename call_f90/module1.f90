@@ -23,8 +23,10 @@ TYPE(MyType_T) :: mytype
 
 CONTAINS
 
-SUBROUTINE init_MyModule()
 
+!-------------------------
+SUBROUTINE init_MyModule()
+!-------------------------
   gbl_Arr1 = (/ 1.1d0, 2.2d0, 3.4d0 /)
   gbl_Arr2(1,:) = (/ 1.1d0, 2.2d0, 3.4d0 /)
   gbl_Arr2(2,:) = (/ 2.1d0, 2.3d0, 4.4d0 /)
@@ -53,11 +55,51 @@ SUBROUTINE init_MyModule()
 END SUBROUTINE
 
 
+!-----------------------------
 subroutine finalize_MyModule()
+!-----------------------------
   deallocate(gbl_Arr3)
   deallocate(gbl_Arr4)
   deallocate(gbl_Arr5)
 end subroutine
+
+
+
+!--------------------------------------
+subroutine calc_something01(N, a, b, c)
+!--------------------------------------
+  integer :: N
+  real(8) :: a(N)
+  real(8) :: b(N)
+  real(8) :: c(N)
+
+  c(:) = a(:) + b(:)
+  return
+end subroutine
+
+
+!-------------------------------------
+subroutine calc_something02(N, a, b, c)
+!--------------------------------------
+  integer(8) :: N
+  real(8) :: a(N)
+  real(8) :: b(N)
+  real(8) :: c(N)
+
+  write(*,*) 'c = ', c
+  return
+end subroutine
+
+
+!-------------------------------------
+subroutine calc_something03(N)
+!--------------------------------------
+  integer(8) :: N
+  write(*,*) 'N = ', N
+  return
+end subroutine
+
+
 
 !----------------------
 INTEGER FUNCTION five()
@@ -65,7 +107,10 @@ INTEGER FUNCTION five()
   five = 5
 END FUNCTION
 
+
+!---------------------------
 REAL(8) FUNCTION get_gbl_R()
+!---------------------------
   get_gbl_R = gbl_R
 END FUNCTION
 
