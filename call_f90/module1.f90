@@ -10,6 +10,7 @@ REAL(8), ALLOCATABLE :: gbl_Arr3(:,:)
 REAL(8), ALLOCATABLE :: gbl_Arr4(:,:,:)
 REAL(8), ALLOCATABLE :: gbl_Arr5(:,:,:)
 
+integer, allocatable :: iarr1(:)
 COMPLEX(8), ALLOCATABLE :: zarr1(:,:)
 
 
@@ -63,6 +64,9 @@ SUBROUTINE init_MyModule()
   zarr1(3,:) = cmplx(8.d0, 7.7d0, kind=8)
   zarr1(2,2) = cmplx(1111.d0, 2222.d0, kind=8)
 
+  allocate(iarr1(4))
+  iarr1(:) = (/ 3, 4, 6, 7 /)
+
 END SUBROUTINE
 
 
@@ -73,6 +77,7 @@ subroutine finalize_MyModule()
   deallocate(gbl_Arr4)
   deallocate(gbl_Arr5)
   deallocate(zarr1)
+  deallocate(iarr1)
 end subroutine
 
 
