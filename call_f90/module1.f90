@@ -67,6 +67,14 @@ SUBROUTINE init_MyModule()
   allocate(iarr1(4))
   iarr1(:) = (/ 3, 4, 6, 7 /)
 
+  allocate( mytype%D2jl(3,4) )
+  
+  mytype%D2jl(1,:) = 4.5d0
+  mytype%D2jl(2,:) = 12.0d0
+  mytype%D2jl(3,:) = 99.1d0
+
+  mytype%Ndata = 3*4
+
 END SUBROUTINE
 
 
@@ -78,6 +86,9 @@ subroutine finalize_MyModule()
   deallocate(gbl_Arr5)
   deallocate(zarr1)
   deallocate(iarr1)
+  
+  deallocate(mytype%D2jl)
+
 end subroutine
 
 
