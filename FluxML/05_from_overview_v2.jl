@@ -29,7 +29,7 @@ function main()
     println("Initial loss: ", lossfunc(x_train, y_train))
 
     for epoch in 1:200
-        Flux.train!(lossfunc, params(model), data, opt)
+        Flux.train!(lossfunc, Flux.params(model), data, opt)
     end
 
 
