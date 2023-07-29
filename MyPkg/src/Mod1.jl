@@ -1,6 +1,8 @@
 module Mod1
 
-function hello(name::AbstractString)
+using Printf
+
+function hello( name::String )
   @printf("Hello %s. I am Mod1.\n", name)
 end
 
