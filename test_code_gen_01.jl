@@ -22,6 +22,16 @@ function main()
         eval(build_expr_prog2(v))
     end
 end
+#main()
 
-main()
 
+# Need to use begin end for multiline expression
+function build_expr_prog_all(s::Symbol)
+    str_prog = """
+    begin
+    $s = get_$s()
+    println("Value of $s = ", $s)
+    end
+    """
+    return str_prog
+end
